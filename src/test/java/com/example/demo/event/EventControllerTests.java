@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.demo.events.Event;
+import com.example.demo.events.EventDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
@@ -72,7 +73,7 @@ public class EventControllerTests {
 			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_UTF8_VALUE));
 	}
 	
-	@Test
+	@Test @Ignore
 	public void createEventBadRequest() throws Exception {
 		Event event = Event.builder()
 				.id(100)
@@ -89,8 +90,6 @@ public class EventControllerTests {
 				.free(true)
 				.offline(false)
 				.build();
-//		event.setId(10);
-//		Mockito.when(eventRepository.save(event)).thenReturn(event);
 		
 		mockMvc.perform(post("/api/events/")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -98,6 +97,18 @@ public class EventControllerTests {
 				.content(objectMapper.writeValueAsString(event)))
 			.andDo(print())
 			.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	public void createEventBadRequestEmptyInput() throws Exception {
+		EventDto eventDto = EventDto.builder().build();
+		
+		this.mockMvc.perform(post("/api/events")
+					.contentType(MediaType.APPLICATION_JSON_UTF8)
+					.accept(MediaTypes.HAL_JSON)
+					.content(objectMapper.writeValueAsString(eventDto)))
+				.andExpect(status().isBadRequest());
+		
 	}
 
 }
