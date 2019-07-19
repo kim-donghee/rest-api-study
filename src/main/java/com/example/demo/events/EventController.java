@@ -35,12 +35,12 @@ public class EventController {
 	@PostMapping
 	public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
 		if(errors.hasErrors()) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().body(errors);
 		}
 		
 		eventValidator.validate(eventDto, errors);
 		if(errors.hasErrors()) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().body(errors);
 		}
 		
 //		Event event = Event.builder().build();
@@ -51,5 +51,7 @@ public class EventController {
 		URI createdUri = linkTo(EventController.class).slash(savedEvent.getId()).toUri();
 		return ResponseEntity.created(createdUri).body(event);
 	}
+	
+	// return ResponseEntity.badRequest().body(errors); 자바빈 스펙을 준수하지못해 변환시 에러 발생
 	
 }
