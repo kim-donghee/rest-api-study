@@ -51,3 +51,5 @@ public class ErrorSerializer extends JsonSerializer<Errors> {
 	}
 
 }
+
+// bean serializer

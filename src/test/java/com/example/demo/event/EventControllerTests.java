@@ -75,6 +75,38 @@ public class EventControllerTests {
 			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_UTF8_VALUE));
 	}
 	
+	@Test 
+	@TestDescription("정상적으로 이벤트를 생성하는 테스트")
+	public void createEvent2() throws Exception {
+		EventDto event = EventDto.builder()
+				.name("Spring")
+				.description("REST API Development with Spring")
+				.beginEnrollmentDateTime(LocalDateTime.of(2018, 11 , 23, 14, 21))
+				.closeEnrollmentDateTime(LocalDateTime.of(2018, 11 , 24, 14, 21))
+				.beginEventDateTime(LocalDateTime.of(2018, 11 , 25, 14, 21))
+				.endEventDateTime(LocalDateTime.of(2018, 11 , 26, 14, 21))
+				.basePrice(100)
+				.maxPrice(200)
+				.limitOfEnrollment(100)
+				.location("강남역 D2 스타텁 팩토리")
+				.build();
+		
+		mockMvc.perform(post("/api/events/")
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.accept(MediaTypes.HAL_JSON)
+				.content(objectMapper.writeValueAsString(event)))
+			.andDo(print())
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("id").exists())
+			.andExpect(jsonPath("free").value(false))
+			.andExpect(jsonPath("offline").value(true))
+			.andExpect(header().exists(HttpHeaders.LOCATION))
+			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_UTF8_VALUE))
+			.andExpect(jsonPath("_links.self").exists())
+			.andExpect(jsonPath("_links.query-events").exists())
+			.andExpect(jsonPath("_links.update-event").exists());
+	}
+	
 	@Test @Ignore
 	@TestDescription("입력 받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
 	public void createEventBadRequest() throws Exception {
@@ -115,7 +147,7 @@ public class EventControllerTests {
 		
 	}
 	
-	@Test
+	@Test @Ignore
 	@TestDescription("입력 값이 잘못된 경우에 에러가 발생하는 테스트")
 	public void createEventBadRequestWrongInput() throws Exception {
 		EventDto eventDto = EventDto.builder()
