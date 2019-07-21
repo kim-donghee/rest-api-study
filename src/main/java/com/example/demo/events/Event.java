@@ -38,6 +38,7 @@ public class Event {
     private EventStatus eventStatus;
     
 	public void update() {
+		this.eventStatus = EventStatus.DRAFT;
 		// update free
 		this.free = (this.basePrice == 0 && this.maxPrice == 0) ? true : false;
 		this.offline = (this.location == null || this.location.isBlank()) ? false : true;
