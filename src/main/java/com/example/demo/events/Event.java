@@ -7,6 +7,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+import com.example.demo.accounts.Account;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +39,8 @@ public class Event {
     private boolean free;
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
+    @ManyToOne
+    private Account manager;
     
 	public void update() {
 		this.eventStatus = EventStatus.DRAFT;
