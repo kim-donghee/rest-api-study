@@ -15,6 +15,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.demo.accounts.Account;
+import com.example.demo.accounts.CurrentUser;
 import com.example.demo.common.ErrorsResource;
 
 @Controller
@@ -45,6 +49,9 @@ public class EventController {
 	
 	@PostMapping
 	public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+		Authentication authentication = 
+				SecurityContextHolder.getContext().getAuthentication();
+		
 		if(errors.hasErrors()) {
 			return badRequest(errors);
 		}
@@ -79,10 +86,21 @@ public class EventController {
 	}
 	
 	@GetMapping
-	public ResponseEntity queryEvent(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+	public ResponseEntity queryEvent(Pageable pageable, 
+			PagedResourcesAssembler<Event> assembler, 
+//			@AuthenticationPrincipal AccountAdapter currentUser
+//			@AuthenticationPrincipal(expression = "account") Account account	
+			@CurrentUser Account account
+			) {
 		Page<Event> page = this.eventRepository.findAll(pageable);
 		var pageResoureces = assembler.toResource(page, e -> new EventResource(e));
 		pageResoureces.add(new Link("/docs/index.html#resources-events-list").withRel("profile"));
+//		if(currentUser != null) {
+//			pageResoureces.add(linkTo(EventController.class).withRel("create-event"));
+//		}
+		if(account != null) {
+			pageResoureces.add(linkTo(EventController.class).withRel("create-event"));
+		}
 		return ResponseEntity.ok(pageResoureces);
 	}
 	
