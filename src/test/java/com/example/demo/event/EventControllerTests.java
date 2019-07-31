@@ -359,7 +359,7 @@ public class EventControllerTests extends BaseControllerTest {
 	@TestDescription("정상적으로 수정이 성공하는 테스트")
 	public void updateEvent() throws Exception {
 		// Given
-		Event event = this.generateEvent(100);
+		Event event = eventRepositry.findById(3).get();
 		EventDto eventDto = this.modelMapper.map(event, EventDto.class);
 		String eventName = "Updated Event";
 		eventDto.setName(eventName);

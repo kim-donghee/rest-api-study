@@ -48,16 +48,17 @@ public class AppConfing {
 			
 			@Override
 			public void run(ApplicationArguments args) throws Exception {
-				IntStream.range(1, 30).forEach(i -> generateEvent(i));
 //				generateAccount("admin@email.com", "admin", Set.of(AccountRole.ADMIN, AccountRole.USER));
 //				generateAccount("user@email.com", "user", Set.of(AccountRole.USER));
 				
-				generateAccount(appProperties.getAdminUsername(), 
+				Account admin = generateAccount(appProperties.getAdminUsername(), 
 						appProperties.getAdminPassword(), 
 						Set.of(AccountRole.ADMIN, AccountRole.USER));
 				generateAccount(appProperties.getUserUsername(), 
 						appProperties.getUserPassword(), 
 						Set.of(AccountRole.USER));
+				
+				IntStream.range(1, 30).forEach(i -> generateEvent(i, admin));
 				
 			}
 			
@@ -70,7 +71,7 @@ public class AppConfing {
 				return accountService.saveAccount(account);
 			}
 			
-			private Event generateEvent(int index) {
+			private Event generateEvent(int index, Account manager) {
 				Event event = Event.builder()
 						.name("event" + index)
 						.description("test event")
@@ -82,7 +83,9 @@ public class AppConfing {
 						.maxPrice(200)
 						.limitOfEnrollment(100)
 						.location("강남역 D2 스타텁 팩토리")
+						.manager(manager)
 						.build();
+				event.update();
 				
 				return this.eventRepositry.save(event);
 			}
